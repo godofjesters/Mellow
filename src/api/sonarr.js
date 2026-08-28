@@ -4,12 +4,12 @@ module.exports = class Sonarr {
     constructor(config) {
         this.config = config;
         this.endpoints = {
-            "/series" : getURL(config.host, config.port, config.ssl, config.baseurl + `/api/series?apikey=${config.apikey}`),
-            "/series/id" : getURL(config.host, config.port, config.ssl, config.baseurl + `/api/series/%ID%?apikey=${config.apikey}`),
-            "/series/lookup" : getURL(config.host, config.port, config.ssl, config.baseurl + `/api/series/lookup?term=%NAME%&apikey=${config.apikey}`),
-            "/profile" : getURL(config.host, config.port, config.ssl, config.baseurl + `/api/profile?apikey=${config.apikey}`),
-            "/rootfolder" : getURL(config.host, config.port, config.ssl, config.baseurl + `/api/rootfolder?apikey=${config.apikey}`),
-            "/system/status" : getURL(config.host, config.port, config.ssl, config.baseurl + `/api/system/status?apikey=${config.apikey}`),
+            "/series" : getURL(config.host, config.port, config.ssl, config.baseurl + `/api/v3/series?apikey=${config.apikey}`),
+            "/series/id" : getURL(config.host, config.port, config.ssl, config.baseurl + `/api/v3/series/%ID%?apikey=${config.apikey}`),
+            "/series/lookup" : getURL(config.host, config.port, config.ssl, config.baseurl + `/api/v3/series/lookup?term=%NAME%&apikey=${config.apikey}`),
+            "/profile" : getURL(config.host, config.port, config.ssl, config.baseurl + `/api/v3/qualityprofile?apikey=${config.apikey}`),
+            "/rootfolder" : getURL(config.host, config.port, config.ssl, config.baseurl + `/api/v3/rootfolder?apikey=${config.apikey}`),
+            "/system/status" : getURL(config.host, config.port, config.ssl, config.baseurl + `/api/v3/system/status?apikey=${config.apikey}`),
             "/languageprofile" : getURL(config.host, config.port, config.ssl, config.baseurl + `/api/v3/languageprofile?apikey=${config.apikey}`)
         };
     }
@@ -195,6 +195,7 @@ module.exports = class Sonarr {
         return new Promise((resolve, reject) => {
             post({
                 headers: {'accept' : 'application/json',
+                'Content-Type': 'application/json',
                 'User-Agent': `Mellow/${process.env.npm_package_version}`},
                 url: this.endpoints['/series'],
                 body: JSON.stringify(newSeries)

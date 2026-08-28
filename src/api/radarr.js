@@ -4,13 +4,13 @@ module.exports = class Radarr {
     constructor(config) {
         this.config = config;
         this.endpoints = {
-            "/movie" : getURL(config.host, config.port, config.ssl, config.baseurl + `/api/movie?apikey=${config.apikey}`),
-            "/movie/id" : getURL(config.host, config.port, config.ssl, config.baseurl + `/api/movie/%ID%?apikey=${config.apikey}`),
-            "/movie/lookup" : getURL(config.host, config.port, config.ssl, config.baseurl + `/api/movie/lookup?term=%NAME%&apikey=${config.apikey}`),
-            "/movie/lookup/tmdb" : getURL(config.host, config.port, config.ssl, config.baseurl + `/api/movie/lookup/tmdb?tmdbId=%NAME%&apikey=${config.apikey}`),
-            "/profile" : getURL(config.host, config.port, config.ssl, config.baseurl + `/api/profile?apikey=${config.apikey}`),
-            "/rootfolder" : getURL(config.host, config.port, config.ssl, config.baseurl + `/api/rootfolder?apikey=${config.apikey}`),
-            "/system/status" : getURL(config.host, config.port, config.ssl, config.baseurl + `/api/system/status?apikey=${config.apikey}`)
+            "/movie" : getURL(config.host, config.port, config.ssl, config.baseurl + `/api/v3/movie?apikey=${config.apikey}`),
+            "/movie/id" : getURL(config.host, config.port, config.ssl, config.baseurl + `/api/v3/movie/%ID%?apikey=${config.apikey}`),
+            "/movie/lookup" : getURL(config.host, config.port, config.ssl, config.baseurl + `/api/v3/movie/lookup?term=%NAME%&apikey=${config.apikey}`),
+            "/movie/lookup/tmdb" : getURL(config.host, config.port, config.ssl, config.baseurl + `/api/v3/movie/lookup/tmdb?tmdbId=%NAME%&apikey=${config.apikey}`),
+            "/profile" : getURL(config.host, config.port, config.ssl, config.baseurl + `/api/v3/qualityprofile?apikey=${config.apikey}`),
+            "/rootfolder" : getURL(config.host, config.port, config.ssl, config.baseurl + `/api/v3/rootfolder?apikey=${config.apikey}`),
+            "/system/status" : getURL(config.host, config.port, config.ssl, config.baseurl + `/api/v3/system/status?apikey=${config.apikey}`)
         };
     }
 
@@ -166,6 +166,7 @@ module.exports = class Radarr {
         return new Promise((resolve, reject) => {
             post({
                 headers: {'accept' : 'application/json',
+                'Content-Type': 'application/json',
                 'User-Agent': `Mellow/${process.env.npm_package_version}`},
                 url: this.endpoints['/movie'],
                 body: JSON.stringify(newMovie)
