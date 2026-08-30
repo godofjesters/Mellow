@@ -33,7 +33,7 @@ module.exports = class SonarrService {
             return this.client.reply(msg, newSeries);
         }
         if ((!this.client.config.requesttv
-            || msg.member.roles.some(role => role.name.toLowerCase() === this.client.config.requesttv.toLowerCase()))
+            || msg.member.roles.cache.some(role => role.name.toLowerCase() === this.client.config.requesttv.toLowerCase()))
             && !series.id) {
             this.client.reply(msg, 'If you want to add this series please click on the ⬇ reaction.');
             msgEmbed.react('⬇');

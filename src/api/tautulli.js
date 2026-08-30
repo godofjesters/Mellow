@@ -3,10 +3,15 @@ const { get, getURL } = require('./../util.js');
 module.exports = class Tautulli {
     constructor(config) {
         this.config = config;
+        const apiUrl = getURL(config.host, config.port, config.ssl, config.baseurl + '/api/v2');
+        const endpoint = (command) => `${apiUrl}?${new URLSearchParams({
+            apikey: config.apikey,
+            cmd: command
+        }).toString()}`;
         this.endpoints = {
-            "get_libraries" : getURL(config.host, config.port, config.ssl, config.baseurl + '/api/v2?apikey=' + config.apikey + '&cmd=get_libraries'),
-            "refresh_libraries_list" : getURL(config.host, config.port, config.ssl, config.baseurl + '/api/v2?apikey=' + config.apikey + '&cmd=refresh_libraries_list'),
-            "get_server_identity" : getURL(config.host, config.port, config.ssl, config.baseurl + '/api/v2?apikey=' + config.apikey + '&cmd=get_server_identity')
+            "get_libraries" : endpoint('get_libraries'),
+            "refresh_libraries_list" : endpoint('refresh_libraries_list'),
+            "get_server_identity" : endpoint('get_server_identity')
         };
     }
 

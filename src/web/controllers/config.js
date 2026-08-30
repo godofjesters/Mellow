@@ -4,15 +4,28 @@ const Radarr = require('../../api/radarr.js');
 
 const render = async (req, res) => {
     const config = req.webserver.WebDatabase.config;
-    sonarr = new Sonarr(config['sonarr']);
-    radarr = new Radarr(config['radarr']);
+    const sonarr = new Sonarr(config['sonarr']);
+    const radarr = new Radarr(config['radarr']);
+    let sonarrProfiles;
+    let sonarrRootFolders;
+    let sonarrLanguageProfiles;
+    let radarrProfiles;
+    let radarrRootFolders;
 
-    sonarrProfiles = await sonarr.getProfiles().catch(() => {});
-    sonarrRootFolders = await sonarr.getRootFolders().catch(() => {});
-    sonarrLanguageProfiles = await sonarr.getLanguageProfiles().catch(() => {});
-    
-    radarrProfiles = await radarr.getProfiles().catch(() => {});
-    radarrRootFolders = await radarr.getRootFolders().catch(() => {});
+    if (config.sonarr.host && config.sonarr.apikey) {
+        [sonarrProfiles, sonarrRootFolders, sonarrLanguageProfiles] = await Promise.all([
+            sonarr.getProfiles().catch(() => undefined),
+            sonarr.getRootFolders().catch(() => undefined),
+            sonarr.getLanguageProfiles().catch(() => undefined)
+        ]);
+    }
+
+    if (config.radarr.host && config.radarr.apikey) {
+        [radarrProfiles, radarrRootFolders] = await Promise.all([
+            radarr.getProfiles().catch(() => undefined),
+            radarr.getRootFolders().catch(() => undefined)
+        ]);
+    }
     
     res.status(200)
     .render('config', {

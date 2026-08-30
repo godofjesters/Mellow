@@ -2,7 +2,7 @@ const login = require('../controllers/login.js');
 const router = require('express-promise-router')();
 const passport = require('passport');
 const passStrats = require('../config/passport.js');
-const passJwt = passport.authenticate('userJwt', { successRedirect: '/config' });
+const passJwt = passport.authenticate('userJwt', { session: false, successRedirect: '/config' });
 
 router.route('/').get(login.render);
 router.route('/').post(login.login);

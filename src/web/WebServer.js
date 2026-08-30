@@ -40,7 +40,6 @@ module.exports = class WebServer {
             this.app.use(express.urlencoded({extended: true}));
             this.app.use(express.static(this.path));
             this.app.use(passport.initialize());
-            this.app.use(passport.session());
 
             this.app.locals.site = {
                 version: version

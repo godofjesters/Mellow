@@ -5,7 +5,7 @@ module.exports = class OmbiService {
 
     requestSeries (msg, msgEmbed, series) {
         if ((!this.client.config.requesttv
-            || msg.member.roles.some(role => role.name.toLowerCase() === this.client.config.requesttv.toLowerCase()))
+            || msg.member.roles.cache.some(role => role.name.toLowerCase() === this.client.config.requesttv.toLowerCase()))
             && (!series.available && !series.requested && !series.approved)) {
             this.client.reply(msg, 'If you want to request this series please click on the ⬇ reaction.');
             msgEmbed.react('⬇');
@@ -71,7 +71,7 @@ module.exports = class OmbiService {
 
     requestMovie (msg, msgEmbed, movie) {
         if ((!this.client.config.requestmovie
-            || msg.member.roles.some(role => role.name.toLowerCase() === this.client.config.requestmovie.toLowerCase()))
+            || msg.member.roles.cache.some(role => role.name.toLowerCase() === this.client.config.requestmovie.toLowerCase()))
             && (!movie.available && !movie.requested && !movie.approved)) {
             this.client.reply(msg, 'If you want to request this movie please click on the ⬇ reaction.');
             msgEmbed.react('⬇');

@@ -2,6 +2,27 @@ const path = require('path');
 const Discord = require('discord.js');
 const { capitalizeFirstLetter } = require('../../util.js');
 
+class MellowEmbed extends Discord.EmbedBuilder {
+    constructor() {
+        super();
+        this.mellowFiles = [];
+    }
+
+    addField(name, value, inline = false) {
+        return this.addFields({ name, value: String(value), inline });
+    }
+
+    attachFile(file) {
+        this.mellowFiles.push(file);
+        return this;
+    }
+
+    setFooter(text, iconURL) {
+        if (typeof text === 'object') return super.setFooter(text);
+        return super.setFooter({ text, iconURL });
+    }
+}
+
 const buildHelpAllMsg = function(client, commands) {
     let helpMsg =   `To run a command in Mellow, use \`\`${client.config.commandprefix}command\`\`.\n` +
                     `To run a command in this DM, use \`\`command\`\` with no prefix.\n\n` +
@@ -29,7 +50,7 @@ const buildHelpCommandMsg = function(command) {
 }
 
 const buildTautulliEmbed = function(object) {
-    let libraryEmbed = new Discord.RichEmbed()
+    let libraryEmbed = new MellowEmbed()
     .setTitle('Server Libraries')
     .setTimestamp(new Date())
     .attachFile(path.join(__dirname, '..', '..', 'resources', 'libraries.png'))
@@ -46,7 +67,7 @@ const buildTautulliEmbed = function(object) {
 }
 
 const buildOmbiMovieEmbed = function(msg, movie) {
-    let movieEmbed = new Discord.RichEmbed()
+    let movieEmbed = new MellowEmbed()
     .setTitle(`${movie.title} ${(movie.releaseDate) ? `(${movie.releaseDate.split('T')[0].substring(0,4)})` : ''}`)
     .setDescription(movie.overview.substr(0, 250) + '(...)')
     .setFooter(msg.author.username, `https://cdn.discordapp.com/avatars/${msg.author.id}/${msg.author.avatar}.png`)
@@ -67,7 +88,7 @@ const buildOmbiMovieEmbed = function(msg, movie) {
 }
 
 const buildOmbiSeriesEmbed = function(msg, series) {
-    let seriesEmbed = new Discord.RichEmbed()
+    let seriesEmbed = new MellowEmbed()
     .setTitle(`${series.title} ${(series.firstAired) ? `(${series.firstAired.substring(0,4)})` : ''}`)
     .setDescription(series.overview.substr(0, 250) + '(...)')
     .setFooter(msg.author.username, `https://cdn.discordapp.com/avatars/${msg.author.id}/${msg.author.avatar}.png`)
@@ -98,7 +119,7 @@ const buildOmbiMovieResults = function(selection, data) {
         fieldContent += `[[TheMovieDb](https://www.themoviedb.org/movie/${data[i].theMovieDbId})]\n`;
     }
 
-    let dataEmbed = new Discord.RichEmbed()
+    let dataEmbed = new MellowEmbed()
     dataEmbed.setTitle('Ombi Movie Search')
     .setDescription(`Please select one of the search results. ${(selection === 'emoji') ? '**Wait for the reactions to finish!**' : 'To abort answer **cancel**'}`)
     .addField('__Search Results__', fieldContent);
@@ -115,7 +136,7 @@ const buildOmbiSeriesResults = function(selection, data) {
         fieldContent += `[[TheTVDb](https://www.thetvdb.com/?id=${data[i].id}&tab=series)]\n`;
     }
 
-    let dataEmbed = new Discord.RichEmbed();
+    let dataEmbed = new MellowEmbed();
     dataEmbed.setTitle('Ombi Series Search')
     .setDescription(`Please select one of the search results. ${(selection === 'emoji') ? '**Wait for the reactions to finish!**' : 'To abort answer **cancel**'}`)
     .addField('__Search Results__', fieldContent);
@@ -124,7 +145,7 @@ const buildOmbiSeriesResults = function(selection, data) {
 }
 
 const buildSonarrSeriesEmbed = function(msg, series) {
-    let seriesEmbed = new Discord.RichEmbed()
+    let seriesEmbed = new MellowEmbed()
     .setTitle(`${series.title} (${series.year})`)
     .setFooter(msg.author.username, `https://cdn.discordapp.com/avatars/${msg.author.id}/${msg.author.avatar}.png`)
     .setTimestamp(new Date())
@@ -153,7 +174,7 @@ const buildSonarrSeriesResults = function(selection, data) {
         fieldContent += `[[TheTVDb](https://www.thetvdb.com/?id=${data[i].tvdbId}&tab=series)]\n`;
     }
 
-    let seriesEmbed = new Discord.RichEmbed();
+    let seriesEmbed = new MellowEmbed();
     seriesEmbed.setTitle('Sonarr Series Search')
     .setDescription(`Please select one of the search results. ${(selection === 'emoji') ? '**Wait for the reactions to finish!**' : 'To abort answer **cancel**'}`)
     .addField('__Search Results__', fieldContent);
@@ -162,7 +183,7 @@ const buildSonarrSeriesResults = function(selection, data) {
 }
 
 const buildRadarrMovieEmbed = function(msg, movie) {
-    let movieEmbed = new Discord.RichEmbed()
+    let movieEmbed = new MellowEmbed()
     .setTitle(`${movie.title} (${movie.year})`)
     .setDescription(movie.overview.substr(0, 250) + '(...)')
     .setFooter(msg.author.username, `https://cdn.discordapp.com/avatars/${msg.author.id}/${msg.author.avatar}.png`)
@@ -192,7 +213,7 @@ const buildRadarrMovieResults = function(selection, data) {
         fieldContent += `[[TheMovieDb](https://www.themoviedb.org/movie/${data[i].tmdbId})]\n`;
     }
 
-    let movieEmbed = new Discord.RichEmbed();
+    let movieEmbed = new MellowEmbed();
     movieEmbed.setTitle('Radarr Movie Search')
     .setDescription(`Please select one of the search results. ${(selection === 'emoji') ? '**Wait for the reactions to finish!**' : 'To abort answer **cancel**'}`)
     .addField('__Search Results__', fieldContent);

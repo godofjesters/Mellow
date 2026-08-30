@@ -1,4 +1,3 @@
-const request = require('request');
 const Promise = require('bluebird');
 const url = require('url');
 
@@ -12,30 +11,47 @@ const momentFormat = function (date, client) {
 	return moment(date).format(`MMMM Do YYYY [at] ${client.provider.get('global', 'timeformat', '24') === '24' ? 'HH:mm:ss' : 'hh:mm:ss A'} [UTC]Z`);
 }
 
-const get = function(options) {
-    return new Promise(function(resolve, reject) {
-        request.get(options, function(error, response, body){
-            if (!error && response.statusCode == 200) {
-                resolve({response, body});
-            } else {
-                if (response) {
-                    // return a status code to help with diagnosing api failures
-                    reject({error, body, 'statusCode':response.statusCode});
-                } else {
-                    reject({error, body});
-                }
-            }
+const get = async function(options) {
+    let body;
+    try {
+        const result = await fetch(options.url, {
+            method: 'GET',
+            headers: options.headers
         });
-    });
+        body = await result.text();
+        const response = {
+            statusCode: result.status,
+            headers: Object.fromEntries(result.headers.entries())
+        };
+        if (response.statusCode === 200) return {response, body};
+
+        // return a status code to help with diagnosing api failures
+        throw {error: null, body, 'statusCode': response.statusCode};
+    } catch (error) {
+        if (error && error.statusCode) throw error;
+        throw {error, body};
+    }
 }
 
-const post = function(options) {
-    return new Promise(function(resolve, reject) {
-        request.post(options, function(error, response, body) {
-            if (!error && response.statusCode < 300) resolve({error, response, body});
-            else reject({error, body});
+const post = async function(options) {
+    let body;
+    try {
+        const result = await fetch(options.url, {
+            method: 'POST',
+            headers: options.headers,
+            body: options.body
         });
-    });
+        body = await result.text();
+        const response = {
+            statusCode: result.status,
+            headers: Object.fromEntries(result.headers.entries())
+        };
+        if (response.statusCode < 300) return {error: null, response, body};
+        throw {error: null, body, 'statusCode': response.statusCode};
+    } catch (error) {
+        if (error && error.statusCode) throw error;
+        throw {error, body};
+    }
 }
 
 const checkURLPrefix = function(url) {

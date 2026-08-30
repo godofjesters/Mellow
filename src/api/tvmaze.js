@@ -3,7 +3,7 @@ const { get, replacePlaceholders } = require('./../util.js');
 module.exports = class TVMaze {
     constructor() {
         this.endpoints = {
-            "/lookup/shows" : "http://api.tvmaze.com/lookup/shows?thetvdb=%ID%"
+            "/lookup/shows" : "https://api.tvmaze.com/lookup/shows?thetvdb=%ID%"
         };
     }
 

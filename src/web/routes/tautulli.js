@@ -3,7 +3,7 @@ const tautulli = require('../controllers/tautulli.js');
 const router = require('express-promise-router')();
 const passport = require('passport');
 const passStrats = require('../config/passport.js');
-const passJwt = passport.authenticate('userJwt', { failureRedirect: '/login' });
+const passJwt = passport.authenticate('userJwt', { session: false, failureRedirect: '/login' });
 
 router.route('/').post(passJwt, config.save);
 router.route('/test').post(passJwt, tautulli.test);

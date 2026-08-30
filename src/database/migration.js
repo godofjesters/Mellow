@@ -1,7 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 const Promise = require('bluebird');
-const sqlite = require('sqlite');
+const sqlite3 = require('sqlite3');
+const { open } = require('sqlite');
 const bcrypt = require('bcryptjs');
 const newSettings = require('./settings_format.json');
 
@@ -14,7 +15,10 @@ const migrateSQLITE = function() {
             const newSettingsPath = path.join(__dirname, '..', '..', 'data', 'settings.json');
             if (fs.existsSync(databasePath) ) {
                 console.log("SQLite Settings found! Migrating settings to new settings...");
-                const db = await sqlite.open(databasePath, { Promise });
+                const db = await open({
+                    filename: databasePath,
+                    driver: sqlite3.Database
+                });
                 for (const table of ['general', 'bot', 'ombi', 'tautulli', 'sonarr', 'radarr']) {
                     const result =  await db.get('SELECT * FROM ' + table + ' WHERE id=1');
                     for (const key in result) {

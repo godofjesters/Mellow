@@ -14,7 +14,7 @@ module.exports = class helpCommand {
 	}
     
     async run (msg, args) {
-        if (msg.channel.type !== 'dm') this.client.reply(msg, 'Sent you a DM with information.');
+        if (msg.guild) this.client.reply(msg, 'Sent you a DM with information.');
         if (args.length === 0)
             return this.client.dm(msg, this.client.builder.buildHelpAllMsg(this.client, this.client.commands));
         else if (this.client.commands.hasOwnProperty(args.join(' ')))

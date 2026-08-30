@@ -22,11 +22,13 @@ const login = async (req, res) => {
     const general = req.webserver.WebDatabase.config['general'];
     if (username === general.username && await bcrypt.compare(password, general.password)) {
         const token = signToken(username, rememberme);
-        const dMaxAge = new Date();
-        dMaxAge.setMinutes(dMaxAge.getMinutes() + 30);
         res
         .status(200)
-        .cookie('token' , token, { 'maxAge': dMaxAge })
+        .cookie('token', token, {
+            maxAge: (rememberme === 'true' ? 30 * 24 * 60 : 30) * 60 * 1000,
+            httpOnly: true,
+            sameSite: 'lax'
+        })
         .redirect('/config');
     }
     else {
@@ -42,7 +44,7 @@ const login = async (req, res) => {
 const logout = async (req, res) => {
     res
     .status(200)
-    .cookie('token', '', { 'maxAge': Date.now() })
+    .clearCookie('token', { httpOnly: true, sameSite: 'lax' })
     .redirect('/login');
 }
 

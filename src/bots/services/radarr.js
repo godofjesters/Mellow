@@ -65,7 +65,7 @@ module.exports = class SonarrService {
             return this.client.reply(msg, newMovie);
         }
         if ((!this.client.config.requestmovie
-            || msg.member.roles.some(role => role.name.toLowerCase() === this.client.config.requestmovie.toLowerCase()))
+            || msg.member.roles.cache.some(role => role.name.toLowerCase() === this.client.config.requestmovie.toLowerCase()))
             && !movie.doesExist) {
             this.client.reply(msg, 'If you want to add this movie please click on the ⬇ reaction.');
             msgEmbed.react('⬇');
