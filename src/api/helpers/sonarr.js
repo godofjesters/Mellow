@@ -8,12 +8,15 @@ module.exports = buildSonarrSeries = (series, sonarr) => {
         return errMsg;
     }
 
+    const separator = sonarr.rootfolder.includes('\\') && !sonarr.rootfolder.includes('/') ? '\\' : '/';
+    const rootFolder = sonarr.rootfolder.replace(/[\\/]+$/, '');
+
     let newSeries = {
         title: series.title,
         seasons: series.seasons,
         qualityProfileId: parseInt(sonarr.profile),
         rootFolderPath: sonarr.rootfolder,
-        path: sonarr.rootfolder + series.title,
+        path: `${rootFolder}${separator}${series.title}`,
         seasonFolder: (sonarr.seasonfolders === "true") ? true : false,
         monitored: true,
         tvdbId: series.tvdbId,
@@ -30,8 +33,12 @@ module.exports = buildSonarrSeries = (series, sonarr) => {
         if (status) {
             if (sonarr.profileanime !== "0")
                 newSeries.qualityProfileId = parseInt(sonarr.profileanime);
-            if (sonarr.rootfolderanime !== "0" && sonarr.rootfolderanime !== "")
+            if (sonarr.rootfolderanime !== "0" && sonarr.rootfolderanime !== "") {
                 newSeries.rootFolderPath = sonarr.rootfolderanime;
+                const animeSeparator = sonarr.rootfolderanime.includes('\\') && !sonarr.rootfolderanime.includes('/') ? '\\' : '/';
+                const animeRootFolder = sonarr.rootfolderanime.replace(/[\\/]+$/, '');
+                newSeries.path = `${animeRootFolder}${animeSeparator}${series.title}`;
+            }
 
             newSeries.seriesType = "anime";
         }

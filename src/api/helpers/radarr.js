@@ -5,12 +5,15 @@ module.exports = buildRadarrMovie = (movie, radarr) => {
         return errMsg;
     }
 
+    const separator = radarr.rootfolder.includes('\\') && !radarr.rootfolder.includes('/') ? '\\' : '/';
+    const rootFolder = radarr.rootfolder.replace(/[\\/]+$/, '');
+
     let newMovie = {
         title: movie.title,
         tmdbId: movie.tmdbId,
         qualityProfileId: parseInt(radarr.profile),
         rootFolderPath: radarr.rootfolder,
-        path: radarr.rootfolder + movie.title,
+        path: `${rootFolder}${separator}${movie.title}`,
         titleSlug: movie.titleSlug,
         monitored: true,
         year: movie.year,
