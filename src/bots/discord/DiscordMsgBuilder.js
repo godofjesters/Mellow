@@ -183,22 +183,30 @@ const buildSonarrSeriesResults = function(selection, data) {
 }
 
 const buildRadarrMovieEmbed = function(msg, movie) {
+    const title = movie.title || movie.originalTitle || 'Unknown movie';
+    const year = movie.year || 'Unknown year';
+    const overview = (typeof movie.overview === 'string' && movie.overview.trim())
+        ? `${movie.overview.slice(0, 250)}${movie.overview.length > 250 ? '(...)' : ''}`
+        : 'No overview is available for this movie.';
+
     let movieEmbed = new MellowEmbed()
-    .setTitle(`${movie.title} (${movie.year})`)
-    .setDescription(movie.overview.substr(0, 250) + '(...)')
+    .setTitle(`${title} (${year})`)
+    .setDescription(overview)
     .setFooter(msg.author.username, `https://cdn.discordapp.com/avatars/${msg.author.id}/${msg.author.avatar}.png`)
     .setTimestamp(new Date())
     .setURL('https://www.themoviedb.org/movie/' + movie.tmdbId)
     .attachFile(path.join(__dirname, '..', '..', 'resources', 'tmdb.png'))
     .setThumbnail('attachment://tmdb.png')
-    .addField('__Status__', movie.status, true)
-    .addField('__Studio__', movie.studio, true)
-    .addField('__Runtime__', `${movie.runtime}min`, true);
+    .addField('__Status__', movie.status || 'Unknown', true)
+    .addField('__Studio__', movie.studio || 'Unknown', true)
+    .addField('__Runtime__', Number.isFinite(movie.runtime) ? `${movie.runtime}min` : 'Unknown', true);
 
     if (movie.doesExist) movieEmbed.addField('__Added__', '✅', true);
 
-    if (movie.remotePoster) movieEmbed.setImage(movie.remotePoster);
-    else if (movie.images && movie.images[0].coverType === 'poster') movieEmbed.setImage(movie.images[0].url);
+    const poster = movie.remotePoster || (Array.isArray(movie.images)
+        ? movie.images.find((image) => image && image.coverType === 'poster' && image.url)?.url
+        : undefined);
+    if (poster) movieEmbed.setImage(poster);
 
     return movieEmbed;
 }

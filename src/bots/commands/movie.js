@@ -27,7 +27,7 @@ module.exports = class searchMovieCommand {
 		if (config.bot.defaultservice === 'ombi') {
 			if (config.ombi.host !== '' && config.ombi.apikey !== '')
 				return this.services.ombi.runMovie(msg, searchQuery);
-			else if (config.sonarr.host !== '' && config.radarr.apikey !== '')
+			else if (config.radarr.host !== '' && config.radarr.apikey !== '')
 				return this.services.radarr.run(msg, searchQuery);
 		}
 		else {

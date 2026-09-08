@@ -34,6 +34,8 @@ module.exports = class DiscordBot extends Discord.Client {
     }
 
     messagePayload (content) {
+        if (content instanceof Error) return content.message || 'Something went wrong.';
+        if (content === undefined || content === null) return 'Something went wrong.';
         if (!(content instanceof Discord.EmbedBuilder)) return content;
         const payload = { embeds: [content] };
         if (content.mellowFiles && content.mellowFiles.length) payload.files = content.mellowFiles;

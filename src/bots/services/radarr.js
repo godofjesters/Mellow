@@ -14,6 +14,7 @@ module.exports = class SonarrService {
                 else
                     resolve(false);
             }).catch((err) => {
+                console.error('Radarr movie availability check failed:', err);
                 reject(err);
             });
         });
@@ -33,7 +34,8 @@ module.exports = class SonarrService {
                             }).catch(() => {
                                 reject('There was an error in checking for movie availability.');
                             });
-                        }).catch(() => {
+                        }).catch((err) => {
+                            console.error('Radarr TMDB lookup failed:', err);
                             reject('Something went wrong! Couldn\'t find movie.');
                         });
                     } else {
@@ -49,11 +51,13 @@ module.exports = class SonarrService {
                         }).catch(() => {
                             reject('There was an error in checking for movie availability.');
                         })
-                    }).catch(() => {
+                    }).catch((err) => {
+                        console.error('Radarr TMDB lookup failed:', err);
                         reject('Something went wrong! Couldn\'t find movie.');
                     });
                 }
-            }).catch(() => {
+            }).catch((err) => {
+                console.error(`Radarr movie lookup failed for ${JSON.stringify(searchQuery)}:`, err);
                 reject('Something went wrong! Couldn\'t find any movie.');
             });
         });
@@ -73,9 +77,12 @@ module.exports = class SonarrService {
             this.client.awaitRequest(msg, msgEmbed).then(() => {
                 this.client.api.radarr.addMovie(newMovie).then(() => {
                     return this.client.reply(msg, `Added ${movie.title} in Radarr.`);
-                }).catch(() => {
+                }).catch((err) => {
+                    console.error(`Radarr add failed for TMDB ID ${movie.tmdbId || 'unknown'}:`, err);
                     return this.client.reply(msg, 'Something went wrong! Couldn\'t request movie.');
                 });
+            }).catch((err) => {
+                console.error('Radarr request confirmation failed:', err);
             });
         }
     }
@@ -86,7 +93,9 @@ module.exports = class SonarrService {
             const msgEmbed = await this.client.send(msg, this.client.builder.buildRadarrMovieEmbed(msg, movie));
             return this.addMovie(msg, msgEmbed, movie);
         }).catch((err) => {
-            return this.client.reply(msg, err);
+            console.error('Radarr command failed:', err);
+            const errorMessage = (err instanceof Error) ? err.message : String(err || 'Something went wrong.');
+            return this.client.reply(msg, errorMessage);
         });
     }
 }
