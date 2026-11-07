@@ -1,7 +1,7 @@
 # Mellow [![Paypal](https://img.shields.io/badge/PayPal-Donate-Green.svg?logo=Paypal&style=flat-square)](https://www.paypal.com/donate?hosted_button_id=CQ6VM34ZC68HE) [![Docker](https://img.shields.io/badge/Docker-Hub-lightblue.svg?logo=docker&style=flat-square)](https://cloud.docker.com/u/voidp/repository/docker/voidp/mellow) [![Run on Repl.it](https://repl.it/badge/github/v0idp/Mellow)](https://repl.it/github/v0idp/Mellow)
 
 <p align="center">
-   <img src="src/resources/logo.png" width="256" height="256" link="https://discord.gg/zx2BWp2">
+   <img src="src/resources/logo.png" width="256" height="256">
 </p>
 <p align="center">
    Mellow can communicate with several APIs like Ombi, Sonarr, Radarr and Tautulli which are related to home streaming to use those services directly in your Discord client.

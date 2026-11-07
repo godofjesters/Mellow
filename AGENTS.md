@@ -50,6 +50,10 @@ Latest completed checks: Docker build passed, all eight regression groups passed
 
 ## Deployment
 
+Follow-up help cleanup now iterates unique command instances so aliases do not duplicate entries in the help DM. Alias registration and execution are unchanged. A new regression covers the help list, retained aliases, and removal of the external support invite; all nine regression groups passed in the Node 22 Docker image with the updated builder mounted read-only and external networking disabled.
+
+Follow-up Debian troubleshooting showed that changing the bind mount from `/opt/mellow` to `/opt/mellow/data` initialized fresh settings. Restoring the older `/opt/mellow/settings.json` into the active `/opt/mellow/data/settings.json` and restarting recovered the previous bot configuration: Hades connected with prefix `!`. Logs confirmed port 5065 and a successful bot test; web login success was not explicitly confirmed. Updated deployment instructions retain each existing installation's actual mount and environment-file paths, and set `PORT=5065` explicitly. The obsolete external support invite was removed from help, the client, and README in follow-up local edits.
+
 See `DEPLOYMENT.md`. Build this fork locally using Compose; the upstream `voidp/mellow` registry image does not contain these changes. Default persistent host directory is `/opt/appdata/mellow`, container directory `/usr/src/app/data`, and web port 5065. Set a unique secret before startup and change the initial `mellow` / `default` login. Enable Discord Message Content Intent for prefix commands.
 
 For upgrades, preserve and back up settings and `.env`. Verify startup logs and login after rebuilding. Tests must not write production settings or submit real media requests.

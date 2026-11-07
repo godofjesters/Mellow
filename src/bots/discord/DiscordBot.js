@@ -22,7 +22,6 @@ module.exports = class DiscordBot extends Discord.Client {
         this.config = null;
         this.commands = {};
         this.token = token;
-        this.invite = 'https://discord.gg/zx2BWp2';
     }
 
     send (msg, text) {

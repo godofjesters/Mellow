@@ -11,6 +11,20 @@ const Bot = require('../src/bots/discord/DiscordBot');
 const msg = { author: { id: 'requester' } };
 const collection = (value) => ({ first: () => value });
 const client = { config: { selection: 'text' } };
+test('help lists each command once even when registered under aliases', () => {
+    const builder = require('../src/bots/discord/DiscordMsgBuilder');
+    const radarr = { options: { name: 'radarr', description: 'Search movies' } };
+    const sonarr = { options: { name: 'sonarr', description: 'Search shows' } };
+    const commands = { radarr, r: radarr, sonarr, s: sonarr };
+    const help = builder.buildHelpAllMsg({ config: { commandprefix: '!' } }, commands);
+    assert.equal(help.split('**radarr**').length - 1, 1);
+    assert.equal(help.split('**sonarr**').length - 1, 1);
+    assert.match(help, /Search movies/);
+    assert.match(help, /Search shows/);
+    assert.equal(commands.r, radarr);
+    assert.equal(commands.s, sonarr);
+    assert.doesNotMatch(help, /Discord Support Server|discord\.gg/);
+});
 const selection = (result, length = 3, bot = client) => Bot.prototype.awaitSelection.call(bot, msg, result, length);
 
 test('startup rejects missing, short, and formerly hardcoded secrets', () => {
