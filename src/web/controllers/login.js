@@ -3,9 +3,9 @@ const JWT = require('jsonwebtoken');
 const { JWT_SECRET } = require('../config/keys');
 
 const signToken = (username, rememberme) => {
-    return JWT.sign({user: username}, JWT_SECRET, (rememberme === "true") ? 
-    undefined : {
-        expiresIn: '30m'
+    return JWT.sign({user: username}, JWT_SECRET, {
+        expiresIn: rememberme === 'true' ? '30d' : '30m',
+        algorithm: 'HS256'
     });
 }
 
@@ -20,7 +20,8 @@ const render = async (req, res) => {
 const login = async (req, res) => {
     const { username, password, rememberme } = req.body;
     const general = req.webserver.WebDatabase.config['general'];
-    if (username === general.username && await bcrypt.compare(password, general.password)) {
+    if (typeof username === 'string' && typeof password === 'string' &&
+        username === general.username && await bcrypt.compare(password, general.password)) {
         const token = signToken(username, rememberme);
         res
         .status(200)

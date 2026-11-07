@@ -49,50 +49,48 @@ module.exports = class DiscordBot extends Discord.Client {
             msg.channel.send(this.messagePayload(text));
     }
 
-    awaitSelection (msg, resultMsg, length) {
-        return new Promise(async (resolve, reject) => {
+    async awaitSelection (msg, resultMsg, length) {
+        try {
+            if (!Number.isInteger(length) || length < 1) return -1;
             if (this.config.selection === 'emoji') {
-                const limit = (length <= 10) ? length : 10;
-                const emojis = ['0️⃣', '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣'];
-                for (let i = 0; i < limit; i++) await resultMsg.react(emojis[i]);
-                resultMsg.awaitReactions({ filter: (reaction, user) => emojis.includes(reaction.emoji.name) && user.id === msg.author.id, max: 1, time: 120000 })
-                .then((collected) => {
-                    resultMsg.delete();
-                    if (collected.first()) resolve(emojis.indexOf(collected.first().emoji.name));
-                }).catch(() => {
-                    resolve(-1);
+                const emojis = ['0️⃣', '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣'].slice(0, length);
+                for (const emoji of emojis) await resultMsg.react(emoji);
+                const collected = await resultMsg.awaitReactions({
+                    filter: (reaction, user) => emojis.includes(reaction.emoji.name) && user.id === msg.author.id,
+                    max: 1, time: 120000
                 });
+                const reaction = collected.first();
+                return reaction ? emojis.indexOf(reaction.emoji.name) : -1;
             }
-            else {
-                resultMsg.channel.awaitMessages({ filter: (m) => (!isNaN(parseInt(m.content)) || m.content.startsWith('cancel')) && m.author.id === msg.author.id, max: 1, time: 120000, errors: ['time'] })
-                .then((collected) => {
-                    let message = collected.first().content;
-                    let selection = parseInt(message);
-                    resultMsg.delete();
-                    if (collected.first().deletable) collected.first().delete();
-                    if (message.startsWith('cancel')) {
-                        return this.reply(msg, 'Cancelled command.');
-                    }
-                    else if (selection >= 0 && selection <= length)
-                        resolve(selection);
-                    else
-                        resolve(-1);
-                }).catch(() => {
-                    reject(-1);
-                })
-            }
-        });
+            const collected = await resultMsg.channel.awaitMessages({
+                filter: (m) => m.author.id === msg.author.id && /^(?:-?\d+|cancel)$/i.test(m.content.trim()),
+                max: 1, time: 120000, errors: ['time']
+            });
+            const response = collected.first();
+            if (!response) return -1;
+            if (response.deletable) await response.delete().catch(() => {});
+            const value = response.content.trim();
+            if (value.toLowerCase() === 'cancel') return -1;
+            const selection = Number(value);
+            return Number.isSafeInteger(selection) && selection >= 0 && selection < length ? selection : -1;
+        } catch (error) {
+            return -1;
+        } finally {
+            if (resultMsg.deletable) await resultMsg.delete().catch(() => {});
+        }
     }
 
-    awaitRequest (msg, resultMsg) {
-        return new Promise(async (resolve, reject) => {
-            resultMsg.awaitReactions({ filter: (reaction, user) => reaction.emoji.name === '⬇' && user.id === msg.author.id, max: 1, time: 120000 })
-            .then((collected) => {
-                if (collected.first()) resolve();
-            }).catch((err) => {
-                reject(err);
+    async awaitRequest (msg, resultMsg) {
+        try {
+            await resultMsg.react('⬇');
+            const collected = await resultMsg.awaitReactions({
+                filter: (reaction, user) => reaction.emoji.name === '⬇' && user.id === msg.author.id,
+                max: 1, time: 120000
             });
-        });
+            return Boolean(collected.first());
+        } catch (error) {
+            return false;
+        }
     }
 
     deleteCommandMessages (msg) {
@@ -106,7 +104,8 @@ module.exports = class DiscordBot extends Discord.Client {
             if (err) return console.log(err);
             files.forEach(file => {
                 const eventFunction = require(`./events/${file}`);
-                const eventName = file.split(".")[0] === 'message' ? Discord.Events.MessageCreate : file.split(".")[0];
+                const name = file.split('.')[0];
+                const eventName = name === 'message' ? Discord.Events.MessageCreate : name === 'ready' ? Discord.Events.ClientReady : name;
                 this.on(eventName, async (...args) => eventFunction.run(this, ...args));
             });
         });

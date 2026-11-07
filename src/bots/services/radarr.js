@@ -72,9 +72,10 @@ module.exports = class SonarrService {
             || msg.member.roles.cache.some(role => role.name.toLowerCase() === this.client.config.requestmovie.toLowerCase()))
             && !movie.doesExist) {
             this.client.reply(msg, 'If you want to add this movie please click on the ⬇ reaction.');
-            msgEmbed.react('⬇');
 
-            this.client.awaitRequest(msg, msgEmbed).then(() => {
+
+            this.client.awaitRequest(msg, msgEmbed).then((confirmed) => {
+                if (!confirmed) return;
                 this.client.api.radarr.addMovie(newMovie).then(() => {
                     return this.client.reply(msg, `Added ${movie.title} in Radarr.`);
                 }).catch((err) => {

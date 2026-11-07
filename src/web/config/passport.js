@@ -5,9 +5,11 @@ const { JWT_SECRET } = require('./keys');
 
 passport.use('userJwt', new JwtStrategy({
     jwtFromRequest: ExtractJwt.fromHeader('authorization'),
-    secretOrKey: JWT_SECRET
+    secretOrKey: JWT_SECRET,
+    algorithms: ['HS256']
 }, async (payload, done) => {
     try {
+        if (!Number.isFinite(payload.exp)) return done(null, false);
         const Database = require('../../database/Database.js');
         const webDatabase = new Database();
         const { username } = webDatabase.config.general;
@@ -24,5 +26,5 @@ passport.serializeUser(function(username, done) {
 });
 
 passport.deserializeUser(function(username, done) {
-    done(err, username);
+    done(null, username);
 });

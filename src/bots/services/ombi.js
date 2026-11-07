@@ -8,9 +8,10 @@ module.exports = class OmbiService {
             || msg.member.roles.cache.some(role => role.name.toLowerCase() === this.client.config.requesttv.toLowerCase()))
             && (!series.available && !series.requested && !series.approved)) {
             this.client.reply(msg, 'If you want to request this series please click on the ⬇ reaction.');
-            msgEmbed.react('⬇');
+
     
-            this.client.awaitRequest(msg, msgEmbed).then(() => {
+            this.client.awaitRequest(msg, msgEmbed).then((confirmed) => {
+                if (!confirmed) return;
                 this.client.api.ombi.requestTVShow(series.id, `${encodeURI(msg.author.tag)}`).then(() => {
                     return this.client.reply(msg, `Requested ${series.title} in Ombi.`);
                 }).catch(() => {
@@ -29,15 +30,15 @@ module.exports = class OmbiService {
                     if (selection !== -1) {
                         resolve(data[selection].id);
                     } else {
-                        this.client.reply(msg, 'Please enter a valid selection!');
+                        resolve('Please enter a valid selection!');
                     }
                 } else if (!data.length) {
-                    this.client.reply(msg, 'Couldn\'t find the series you were looking for. Is the search query correct?');
+                    resolve('Couldn\'t find the series you were looking for. Is the search query correct?');
                 } else {
                     resolve(data[0].id);
                 }
             }).catch(() => {
-                this.client.reply(msg, 'Something went wrong! Couldn\'t find any series.');
+                resolve('Something went wrong! Couldn\'t find any series.');
             });
         });
     }
@@ -47,9 +48,9 @@ module.exports = class OmbiService {
 
         let result = null;
         if (searchQuery.startsWith('tvdb:')) {
-            const matches = /^tvdb:(\d+)$/.exec(args.name);
+            const matches = /^tvdb:(\d+)$/.exec(searchQuery);
             if (matches)
-                result = matches[1];
+                result = Number(matches[1]);
             else
                 return this.client.reply(msg, 'Please enter a valid TVDbId!');
         } else {
@@ -74,9 +75,10 @@ module.exports = class OmbiService {
             || msg.member.roles.cache.some(role => role.name.toLowerCase() === this.client.config.requestmovie.toLowerCase()))
             && (!movie.available && !movie.requested && !movie.approved)) {
             this.client.reply(msg, 'If you want to request this movie please click on the ⬇ reaction.');
-            msgEmbed.react('⬇');
+
     
-            this.client.awaitRequest(msg, msgEmbed).then(() => {
+            this.client.awaitRequest(msg, msgEmbed).then((confirmed) => {
+                if (!confirmed) return;
                 this.client.api.ombi.requestMovie(movie.theMovieDbId, `${encodeURI(msg.author.tag)}`).then(() => {
                     return this.client.reply(msg, `Requested ${movie.title} in Ombi.`);
                 }).catch(() => {
@@ -95,15 +97,15 @@ module.exports = class OmbiService {
                     if (selection !== -1) {
                         resolve(data[selection].id);
                     } else {
-                        this.client.reply(msg, 'Please enter a valid selection!');
+                        resolve('Please enter a valid selection!');
                     }
                 } else if (!data.length) {
-                    this.client.reply(msg, 'Couldn\'t find the movie you were looking for. Is the search query correct?');
+                    resolve('Couldn\'t find the movie you were looking for. Is the search query correct?');
                 } else {
                     resolve(data[0].id);
                 }
             }).catch(() => {
-                this.client.reply(msg, 'Something went wrong! Couldn\'t find any movie.');
+                resolve('Something went wrong! Couldn\'t find any movie.');
             });
         });
     }
@@ -113,9 +115,9 @@ module.exports = class OmbiService {
 
         let result = null;
         if (searchQuery.startsWith('tmdb:')) {
-            const matches = /^tmdb:(\d+)$/.exec(args.name);
+            const matches = /^tmdb:(\d+)$/.exec(searchQuery);
             if (matches)
-                result = matches[1];
+                result = Number(matches[1]);
             else
                 return this.client.reply(msg, 'Please enter a valid TMDbId!');
         } else {

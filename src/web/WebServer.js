@@ -5,7 +5,7 @@ const path = require('path');
 const BotHandler = require('../bots/BotHandler.js');
 const router = require('./router.js');
 const { version } = require('../../package.json');
-const PORT = process.env.PORT || 5060;
+const PORT = process.env.PORT || 5065;
 
 module.exports = class WebServer {
     constructor (WebDatabase, botHandler) {
@@ -51,7 +51,7 @@ module.exports = class WebServer {
                 next();
             }, router);
 
-            this.app.listen(PORT, this.onReady());
+            return this.app.listen(PORT, this.onReady());
         } catch(error) {
             console.log(error);
             console.error('Failed to start WebServer.');

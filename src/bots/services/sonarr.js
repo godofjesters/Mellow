@@ -36,9 +36,10 @@ module.exports = class SonarrService {
             || msg.member.roles.cache.some(role => role.name.toLowerCase() === this.client.config.requesttv.toLowerCase()))
             && !series.id) {
             this.client.reply(msg, 'If you want to add this series please click on the ⬇ reaction.');
-            msgEmbed.react('⬇');
 
-            this.client.awaitRequest(msg, msgEmbed).then(() => {
+
+            this.client.awaitRequest(msg, msgEmbed).then((confirmed) => {
+                if (!confirmed) return;
                 this.client.api.sonarr.addSeries(newSeries).then(() => {
                     return this.client.reply(msg, `Added ${series.title} in Sonarr.`);
                 }).catch(() => {
